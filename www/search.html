@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Search | Artmart</title>
+</head>
+<body>
+<header>
+    <a href="search.html">
+        <img src="artmart_logo.png" alt="Artmart" class="logo">
+    </a>
+    <nav>
+        <a href="search.html">Search</a>
+    </nav>
+</header>
+
+<main>
+    <form role="search" class="search-form">
+        <input type="search" id="search" name="q" placeholder="Search the collection" aria-labelledby="searchbutton">
+        <button type="submit" id="searchbutton">Search</button>
+    </form>
+
+    <div id="search-info" class="search-info">
+        Search our collection of more than 400,000 artworks.
+    </div>
+
+    <section id="gallery" class="gallery">
+        <!-- сюда динамически добавляются карточки -->
+    </section>
+</main>
+
+<script type="module">
+    import { getMetObject } from './met-api.js';
+
+    const form = document.querySelector('.search-form');
+    const input = document.getElementById('search');
+    const info = document.getElementById('search-info');
+    const gallery = document.getElementById('gallery');
+
+    // Встроенный список избранных ID (из задания)
+    const HIGHLIGHTS = [437853, 435809, 436535, 360018, 634108, 459080, 435882, 271890, 459055, 39799, 459054];
+
+    // Показ найденных работ
+    async function show(ids, query) {
+        gallery.innerHTML = '';
+        let shown = 0;
+        for (const id of ids.slice(0, 100)) {
+            try {
+                const obj = await getMetObject(id);
+                if (!obj.primaryImageSmall) continue;
+                const div = document.createElement('div');
+                div.className = 'thumb';
+                div.innerHTML = `
+          <a href="framing.html?objectID=${obj.objectID}">
+            <img src="${obj.primaryImageSmall}" alt="${obj.title}" loading="lazy">
+            <div class="museum-label">
+              <span class="artist">${obj.artistDisplayName || ''}</span>
+              <span class="title">${obj.title}</span>,
+              <span class="date">${obj.objectDate || ''}</span>
+            </div>
+          </a>
+        `;
+                gallery.appendChild(div);
+                shown++;
+            } catch (e) { /* игнорируем ошибки для отдельных объектов */ }
+        }
+        info.textContent = query
+            ? `Found ${shown} ${shown === 1 ? 'artwork' : 'artworks'} for “${query}”`
+            : 'Search our collection of more than 400,000 artworks.';
+    }
+
+    // Поиск по запросу
+    async function search(query) {
+        info.textContent = `Searching for “${query}”…`;
+        gallery.innerHTML = '';
+        const res = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/search?q=${encodeURIComponent(query)}&hasImages=true`);
+        const data = await res.json();
+        show(data.objectIDs || [], query);
+    }
+
+    // Обработка параметра ?q=
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    if (q) {
+        input.value = q;
+        search(q);
+    } else {
+        // Показываем избранное (highlights) – используем встроенный массив
+        show(HIGHLIGHTS, null);
+    }
+
+    // Обработка отправки формы
+    form.onsubmit = e => {
+        e.preventDefault();
+        const val = input.value.trim();
+        if (val) history.pushState(null, '', `?q=${encodeURIComponent(val)}`);
+        search(val);
+    };
+</script>
+</body>
+</html>

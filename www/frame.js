@@ -23,7 +23,7 @@ export function render(img, container, label, printSize, frameStyle, frameWidth,
     const w = printSizes[printSize][0];
     const h = printSizes[printSize][1];
 
-    // Вычисляем масштаб x так, чтобы картинка влезала в контейнер
+    // масштаб x так, чтобы картинка влезала в контейнер
     let x;
     if (w > h) {
         x = container.offsetWidth / (w + 2 * matWidth + 2 * frameWidth);

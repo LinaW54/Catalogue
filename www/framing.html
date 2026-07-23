@@ -17,7 +17,6 @@
 </header>
 
 <main class="framing-main" style="justify-content: center;">
-  <!-- Только превью -->
   <div id="preview-container" class="framing-preview" style="margin: 2rem auto;">
     <img id="preview-image" src="" alt="">
     <div id="image-label" class="museum-label"></div>
@@ -44,7 +43,6 @@
     throw new Error('Redirect: object not found');
   }
 
-  // Заполняем подпись
   const label = document.getElementById('image-label');
   label.innerHTML = `
     <span class="artist">${currentObject.artistDisplayName || ''}</span>
@@ -62,18 +60,14 @@
   const matColor = 'peach';
   const matWidth = 3;
 
-  // Функция отрисовки (вызывается один раз после загрузки)
   function render() {
     const container = document.getElementById('preview-container');
     Frame.render(previewImg, container, label, printSize, frameStyle, frameWidth, matColor, matWidth);
   }
 
-  // Ожидаем загрузку изображения
   previewImg.onload = () => render();
   if (previewImg.complete) render();
 
-  // Перерисовка при изменении размера окна (опционально)
-  window.addEventListener('resize', render);
 </script>
 </body>
 </html>

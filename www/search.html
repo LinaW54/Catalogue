@@ -27,7 +27,6 @@
     </div>
 
     <section id="gallery" class="gallery">
-        <!-- сюда динамически добавляются карточки -->
     </section>
 </main>
 
@@ -39,7 +38,7 @@
     const info = document.getElementById('search-info');
     const gallery = document.getElementById('gallery');
 
-    // Встроенный список избранных ID (из задания)
+    // Встроенный список избранных ID
     const HIGHLIGHTS = [437853, 435809, 436535, 360018, 634108, 459080, 435882, 271890, 459055, 39799, 459054];
 
     // Показ найденных работ
@@ -64,7 +63,7 @@
         `;
                 gallery.appendChild(div);
                 shown++;
-            } catch (e) { /* игнорируем ошибки для отдельных объектов */ }
+            } catch (e) {}
         }
         info.textContent = query
             ? `Found ${shown} ${shown === 1 ? 'artwork' : 'artworks'} for “${query}”`
@@ -87,7 +86,6 @@
         input.value = q;
         search(q);
     } else {
-        // Показываем избранное (highlights) – используем встроенный массив
         show(HIGHLIGHTS, null);
     }
 
